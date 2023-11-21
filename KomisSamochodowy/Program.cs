@@ -1,6 +1,9 @@
 using KomisSamochodowy.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +13,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
@@ -29,6 +33,20 @@ else
 }
 
 app.UseHttpsRedirection();
+
+var supportedCultures = new[]
+{
+ new CultureInfo("en-US"),
+ new CultureInfo("fr"),
+};
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    // Formatting numbers, dates, etc.
+    SupportedCultures = supportedCultures,
+    // UI strings that we have localized.
+    SupportedUICultures = supportedCultures
+});
 app.UseStaticFiles();
 
 app.UseRouting();

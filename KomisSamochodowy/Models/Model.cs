@@ -1,9 +1,12 @@
-﻿namespace KomisSamochodowy.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace KomisSamochodowy.Models
 {
     public class Model
     {
 
         public int Id { get; set; }
+        [Display(Name = "Nazwa")]
         public string Nazwa { get; set; }
 
         public ICollection<Samochod> Samochody { get; } = new List<Samochod>();

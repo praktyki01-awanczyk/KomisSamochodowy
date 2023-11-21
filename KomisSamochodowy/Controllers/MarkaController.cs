@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KomisSamochodowy.Data;
 using KomisSamochodowy.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KomisSamochodowy.Controllers
 {
@@ -28,6 +29,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Marka/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Marka == null)
@@ -46,6 +48,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Marka/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -56,6 +59,7 @@ namespace KomisSamochodowy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Nazwa")] Marka marka)
         {
             if (ModelState.IsValid)
@@ -68,6 +72,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Marka/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Marka == null)
@@ -88,6 +93,7 @@ namespace KomisSamochodowy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nazwa")] Marka marka)
         {
             if (id != marka.Id)
@@ -119,6 +125,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Marka/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Marka == null)
@@ -138,6 +145,7 @@ namespace KomisSamochodowy.Controllers
 
         // POST: Marka/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Admin")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

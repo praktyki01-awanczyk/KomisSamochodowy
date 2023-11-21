@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KomisSamochodowy.Data;
 using KomisSamochodowy.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace KomisSamochodowy.Controllers
 {
@@ -28,6 +29,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Model/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Model == null)
@@ -46,6 +48,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Model/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -56,6 +59,7 @@ namespace KomisSamochodowy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Nazwa")] Model model)
         {
             if (ModelState.IsValid)
@@ -68,6 +72,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Model/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Model == null)
@@ -88,6 +93,7 @@ namespace KomisSamochodowy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nazwa")] Model model)
         {
             if (id != model.Id)
@@ -119,6 +125,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Model/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Model == null)
@@ -139,6 +146,7 @@ namespace KomisSamochodowy.Controllers
         // POST: Model/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Model == null)

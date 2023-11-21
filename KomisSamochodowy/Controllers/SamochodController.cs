@@ -7,16 +7,21 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using KomisSamochodowy.Data;
 using KomisSamochodowy.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 namespace KomisSamochodowy.Controllers
 {
     public class SamochodController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public SamochodController(ApplicationDbContext context)
+        public SamochodController(ApplicationDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
+
         }
 
         // GET: Samochod
@@ -42,7 +47,7 @@ namespace KomisSamochodowy.Controllers
             var applicationDbContext = _context.Samochod.Include(s => s.Marka)
                 .Include(s => s.Model)
                 .Include(s => s.Nadwozie)
-                .Include(s => s.Paliwo).Where(p => p.Cena < 50000 && p.Cena > 10001);
+                .Include(s => s.Paliwo).Where(p => p.Cena <= 50000 && p.Cena >= 10001);
             return View(await applicationDbContext.ToListAsync());
         }
 
@@ -51,11 +56,12 @@ namespace KomisSamochodowy.Controllers
             var applicationDbContext = _context.Samochod.Include(s => s.Marka)
                 .Include(s => s.Model)
                 .Include(s => s.Nadwozie).
-                Include(s => s.Paliwo).Where(p => p.Cena < 50000);
+                Include(s => s.Paliwo).Where(p => p.Cena > 50000);
             return View(await applicationDbContext.ToListAsync());
         }
 
         // GET: Samochod/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Samochod == null)
@@ -78,12 +84,13 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Samochod/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            ViewData["MarkaId"] = new SelectList(_context.Marka, "Id", "Id");
-            ViewData["ModelId"] = new SelectList(_context.Model, "Id", "Id");
-            ViewData["NadwozieId"] = new SelectList(_context.Nadwozie, "Id", "Id");
-            ViewData["PaliwoId"] = new SelectList(_context.Paliwo, "Id", "Id");
+            ViewData["MarkaId"] = new SelectList(_context.Marka, "Id", "Nazwa");
+            ViewData["ModelId"] = new SelectList(_context.Model, "Id", "Nazwa");
+            ViewData["NadwozieId"] = new SelectList(_context.Nadwozie, "Id", "Nazwa");
+            ViewData["PaliwoId"] = new SelectList(_context.Paliwo, "Id", "Nazwa");
             return View();
         }
 
@@ -92,6 +99,7 @@ namespace KomisSamochodowy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Kolor,PojemnoscSilnika,Przebieg,NumerVin,Cena,MarkaId,ModelId,NadwozieId,PaliwoId")] Samochod samochod)
         {
             if (ModelState.IsValid)
@@ -108,6 +116,7 @@ namespace KomisSamochodowy.Controllers
         }
 
         // GET: Samochod/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Samochod == null)
@@ -120,10 +129,10 @@ namespace KomisSamochodowy.Controllers
             {
                 return NotFound();
             }
-            ViewData["MarkaId"] = new SelectList(_context.Marka, "Id", "Id", samochod.MarkaId);
-            ViewData["ModelId"] = new SelectList(_context.Model, "Id", "Id", samochod.ModelId);
-            ViewData["NadwozieId"] = new SelectList(_context.Nadwozie, "Id", "Id", samochod.NadwozieId);
-            ViewData["PaliwoId"] = new SelectList(_context.Paliwo, "Id", "Id", samochod.PaliwoId);
+            ViewData["MarkaId"] = new SelectList(_context.Marka, "Id", "Nazwa", samochod.MarkaId);
+            ViewData["ModelId"] = new SelectList(_context.Model, "Id", "Nazwa", samochod.ModelId);
+            ViewData["NadwozieId"] = new SelectList(_context.Nadwozie, "Id", "Nazwa", samochod.NadwozieId);
+            ViewData["PaliwoId"] = new SelectList(_context.Paliwo, "Id", "Nazwa", samochod.PaliwoId);
             return View(samochod);
         }
 
@@ -132,6 +141,7 @@ namespace KomisSamochodowy.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Kolor,PojemnoscSilnika,Przebieg,NumerVin,Cena,MarkaId,ModelId,NadwozieId,PaliwoId")] Samochod samochod)
         {
             if (id != samochod.Id)
@@ -159,14 +169,15 @@ namespace KomisSamochodowy.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MarkaId"] = new SelectList(_context.Marka, "Id", "Id", samochod.MarkaId);
-            ViewData["ModelId"] = new SelectList(_context.Model, "Id", "Id", samochod.ModelId);
-            ViewData["NadwozieId"] = new SelectList(_context.Nadwozie, "Id", "Id", samochod.NadwozieId);
-            ViewData["PaliwoId"] = new SelectList(_context.Paliwo, "Id", "Id", samochod.PaliwoId);
+            ViewData["MarkaId"] = new SelectList(_context.Marka, "Id", "Nazwa", samochod.MarkaId);
+            ViewData["ModelId"] = new SelectList(_context.Model, "Id", "Nazwa", samochod.ModelId);
+            ViewData["NadwozieId"] = new SelectList(_context.Nadwozie, "Id", "Nazwa", samochod.NadwozieId);
+            ViewData["PaliwoId"] = new SelectList(_context.Paliwo, "Id", "Nazwa", samochod.PaliwoId);
             return View(samochod);
         }
 
         // GET: Samochod/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Samochod == null)
@@ -191,6 +202,7 @@ namespace KomisSamochodowy.Controllers
         // POST: Samochod/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.Samochod == null)
